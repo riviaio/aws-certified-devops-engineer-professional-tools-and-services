@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  IamUser2:        
+    Type: AWS::IAM::User
+      Properties:
+        LoginProfile: 
+          Password: "YZC4YR7V!a"
+          PasswordResetRequired: false
+        UserName: manager
+        ManagedPolicyArns: 
+          - arn:aws:iam::aws:policy/AdministratorAccess    
+  IamUser:
+    Type: AWS::IAM::User
+    Properties:
+      LoginProfile: 
+        Password: "YZC4YR7V!a"
+        PasswordResetRequired: false
+      UserName: developer
+      ManagedPolicyArns: 
+        - arn:aws:iam::aws:policy/AdministratorAccess
+  AccessKey:
+    Type: AWS::IAM::AccessKey
+    Properties: 
+      Status: Active
+      UserName: !Ref IamUser
+  AccessKeySecret:
+    Type: AWS::SecretsManager::Secret
+    Properties: 
+      Description: !Sub "These are the credentials for the IAM User ${IamUser}"
+      SecretString: !Join
+        - ""
+        - - '{"AccessKeyId":"'
+          - !Ref AccessKey
+          - '","SecretAccessKey":"'
+          - !GetAtt AccessKey.SecretAccessKey
+          - '"}'
+      
+    
